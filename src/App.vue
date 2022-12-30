@@ -8,7 +8,7 @@
 
     <div class="mt-4" v-if="selectedOption">
       <MirrorRepository v-if="selectedOption.id == 1" />
-      <SyncTwoAzureDevopsOrgs v-if="selectedOption.id == 2" />
+      <AzureToAzure v-if="selectedOption.id == 2" />
     </div>
 
   </div>
@@ -17,17 +17,17 @@
 <script setup>
 import { ref } from "vue";
 import Home from './components/Home.vue';
-import MirrorRepository from './components/MirrorRepository.vue';
-import SyncTwoAzureDevopsOrgs from './components/SyncTwoAzureDevopsOrgs/SyncTwoAzureDevopsOrgs.vue';
-import { useAzureDevopsStore } from "./stores/AzureDevopsStore";
+import MirrorRepository from './components/MirrorRepository/MirrorRepository.vue';
+import AzureToAzure from './components/AzureToAzure/AzureToAzure.vue';
+import { useAzureToAzureStore } from "./stores/AzureToAzureStore";
 const selectedOption = ref(null);
 
-const azureDevopsStore = useAzureDevopsStore();
+const azureToAzureStore = useAzureToAzureStore();
 
 function goToHome() {
-  if(azureDevopsStore.stillInrogress) return;
+  if(azureToAzureStore.stillInrogress) return;
   selectedOption.value = null;
-  azureDevopsStore.$reset();
+  azureToAzureStore.$reset();
 }
 </script>
 

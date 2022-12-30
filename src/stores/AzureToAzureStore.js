@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { invoke } from "@tauri-apps/api/tauri";
 
-export const useAzureDevopsStore = defineStore("azureDevopsStore", {
+export const useAzureToAzureStore = defineStore("azureToAzureStore", {
 	state: () => ({
 		srcPat: null,
 		srcOrgName: null,

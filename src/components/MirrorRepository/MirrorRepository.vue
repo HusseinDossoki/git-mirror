@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import Spinner from "./Spinner.vue";
+import Spinner from "../Spinner.vue";
 import { ref, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 

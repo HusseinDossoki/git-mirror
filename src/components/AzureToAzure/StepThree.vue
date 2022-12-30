@@ -1,17 +1,17 @@
 <template>
 	<div>
-		We are going to sync <strong>{{ azureDevopsStore.selectedProjectsCount }}</strong> projects:-
+		We are going to sync <strong>{{ azureToAzureStore.selectedProjectsCount }}</strong> projects:-
 
 		<div class="form-check my-2">
-			<input class="form-check-input" type="checkbox" :checked="azureDevopsStore.createProjectIfNotExist" value=""
-				id="flexCheckDefault" @change="onCheckChnages" :disabled="azureDevopsStore.stillInrogress">
+			<input class="form-check-input" type="checkbox" :checked="azureToAzureStore.createProjectIfNotExist" value=""
+				id="flexCheckDefault" @change="onCheckChnages" :disabled="azureToAzureStore.stillInrogress">
 			<label class="form-check-label" for="flexCheckDefault">
 				Create the Project If Not Exist
 			</label>
 		</div>
 
 		<div class="list-group mt-2">
-			<a href="javascript:void(0)" v-for="project in azureDevopsStore.selectedProjects"
+			<a href="javascript:void(0)" v-for="project in azureToAzureStore.selectedProjects"
 				class="list-group-item list-group-item-action flex-column align-items-start">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ project.name }}</h5>
@@ -31,10 +31,10 @@
 </template>
 
 <script setup>
-import { useAzureDevopsStore } from "../../stores/AzureDevopsStore";
+import { useAzureToAzureStore } from "../../stores/AzureToAzureStore";
 import { computed } from "vue";
 
-const azureDevopsStore = useAzureDevopsStore();
+const azureToAzureStore = useAzureToAzureStore();
 const formatTime = computed(() => {
 	return time => {
 		if (!time) return;
@@ -44,7 +44,7 @@ const formatTime = computed(() => {
 	};
 });
 function onCheckChnages(e) {
-	azureDevopsStore.createProjectIfNotExist = e.target.checked;
+	azureToAzureStore.createProjectIfNotExist = e.target.checked;
 }
 </script>
 

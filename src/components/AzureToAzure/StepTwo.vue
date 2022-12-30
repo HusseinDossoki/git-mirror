@@ -2,7 +2,7 @@
 
     <div class="input-group input-group-sm flex-nowrap mt-2">
         <span class="input-group-text">Filter by Name</span>
-        <input type="text" class="form-control" v-model.trim="azureDevopsStore.filter">
+        <input type="text" class="form-control" v-model.trim="azureToAzureStore.filter">
     </div>
 
     <div class="form-check my-2">
@@ -13,7 +13,7 @@
     </div>
 
     <div class="row card-container">
-        <div class="col-12 mt-2" v-for="project in azureDevopsStore.filtered">
+        <div class="col-12 mt-2" v-for="project in azureToAzureStore.filtered">
             <div class="card" @click="onProjectClicked(project)" :class="{ selected: project.selected }">
                 <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
                 <div class="card-body">
@@ -27,12 +27,12 @@
 </template>
 
 <script setup>
-import { useAzureDevopsStore } from "../../stores/AzureDevopsStore";
+import { useAzureToAzureStore } from "../../stores/AzureToAzureStore";
 
-const azureDevopsStore = useAzureDevopsStore();
+const azureToAzureStore = useAzureToAzureStore();
 
 function onCheckChnages(e) {
-    e.target.checked ? azureDevopsStore.checkAll() : azureDevopsStore.uncheckAll();
+    e.target.checked ? azureToAzureStore.checkAll() : azureToAzureStore.uncheckAll();
 }
 function onProjectClicked(project) {
     project.selected = !project.selected;
