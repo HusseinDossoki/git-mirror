@@ -9,6 +9,7 @@
     <div class="mt-4" v-if="selectedOption">
       <MirrorRepository v-if="selectedOption.id == 1" />
       <AzureToAzure v-if="selectedOption.id == 2" />
+      <GithubToAzure v-if="selectedOption.id == 3" />
     </div>
 
   </div>
@@ -19,6 +20,7 @@ import { ref } from "vue";
 import Home from './components/Home.vue';
 import MirrorRepository from './components/MirrorRepository/MirrorRepository.vue';
 import AzureToAzure from './components/AzureToAzure/AzureToAzure.vue';
+import GithubToAzure from './components/GithubToAzure/GithubToAzure.vue';
 import { useAzureToAzureStore } from "./stores/AzureToAzureStore";
 const selectedOption = ref(null);
 

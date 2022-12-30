@@ -35,6 +35,12 @@ const options = ref([
 		image: new URL('../assets/azure.png', import.meta.url).href,
 		title: "Sync Azure Devops Organizations",
 		description: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer."
+	},
+	{
+		id: 3,
+		image: new URL('../assets/github-to-azure.jpg', import.meta.url).href,
+		title: "Github to Azure Devops",
+		description: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer."
 	}
 ]);
 </script>
@@ -63,5 +69,6 @@ const options = ref([
 .card img {
 	height: 100px;
 	object-fit: contain;
+	padding-left: 15px;
 }
 </style>
