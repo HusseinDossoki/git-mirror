@@ -8,6 +8,7 @@ export const useAzureDevopsStore = defineStore("azureDevopsStore", {
 		destPat: null,
 		destOrgName: null,
 		loading: false,
+		createProjectIfNotExist: true,
 		filter: null,
 		currentStep: 1,
 		srcProjects: [],
@@ -108,7 +109,7 @@ export const useAzureDevopsStore = defineStore("azureDevopsStore", {
 								organization_name: this.destOrgName,
 								project_name: productName
 							},
-							create_project_if_not_exist: true
+							create_project_if_not_exist: this.createProjectIfNotExist
 						}
 					})
 					.then((res) => {

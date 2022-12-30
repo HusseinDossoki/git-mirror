@@ -1,6 +1,15 @@
 <template>
 	<div>
 		We are going to sync <strong>{{ azureDevopsStore.selectedProjectsCount }}</strong> projects:-
+
+		<div class="form-check my-2">
+			<input class="form-check-input" type="checkbox" :checked="azureDevopsStore.createProjectIfNotExist" value=""
+				id="flexCheckDefault" @change="onCheckChnages" :disabled="azureDevopsStore.stillInrogress">
+			<label class="form-check-label" for="flexCheckDefault">
+				Create the Project If Not Exist
+			</label>
+		</div>
+
 		<div class="list-group mt-2">
 			<a href="javascript:void(0)" v-for="project in azureDevopsStore.selectedProjects"
 				class="list-group-item list-group-item-action flex-column align-items-start">
@@ -28,17 +37,20 @@ import { computed } from "vue";
 const azureDevopsStore = useAzureDevopsStore();
 const formatTime = computed(() => {
 	return time => {
-		if(!time) return;
+		if (!time) return;
 		let minutes = Math.floor(time / 60);
 		let seconds = time - minutes * 60;
 		return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 	};
-})
+});
+function onCheckChnages(e) {
+	azureDevopsStore.createProjectIfNotExist = e.target.checked;
+}
 </script>
 
 <style scoped>
 .list-group {
-	max-height: 76vh;
+	max-height: 70vh;
 	overflow-y: scroll;
 }
 
