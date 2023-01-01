@@ -1,6 +1,7 @@
 use crate::azure_devops::projects;
 use crate::azure_devops::repos;
 use crate::git_operations;
+use futures::{future, FutureExt};
 use std::{thread, time};
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
@@ -99,56 +100,45 @@ pub async fn mirror_project(params: Params) -> Result<(), String> {
     )
     .await;
 
+    let mut tasks = vec![];
     for repo in dest_repos.value {
-        if repo.name == "default" {
-            continue;
-        }
+        let task = delete_repo(
+            repo.id.clone(),
+            repo.name.clone(),
+            &params.dest_project_ref.pat,
+            &params.dest_project_ref.organization_name,
+            &dest_project.id,
+        );
 
-        let res = repos::delete::delete_repo(repos::delete::Params {
-            pat: params.dest_project_ref.pat.clone(),
-            organization_name: params.dest_project_ref.organization_name.clone(),
-            project_id: dest_project.id.clone(),
-            repo_id: repo.id,
-        })
-        .await;
-
-        if res.is_err() {
-            return Err(res.err().unwrap());
-        }
+        tasks.push(task.boxed());
     }
+
+    future::join_all(tasks).await;
 
     // Create the new repos
-    for repo in src_repos.value {
-        let new_repo = match repos::create::create_repo(&repos::create::Params {
-            pat: params.dest_project_ref.pat.clone(),
-            organization_name: params.dest_project_ref.organization_name.clone(),
-            project_name: params.dest_project_ref.project_name.clone(),
-            project_id: dest_project.id.clone(),
-            repo_name: repo.name,
-        })
-        .await
-        {
-            Ok(data) => data,
-            Err(err) => return Err(err),
-        };
+    let mut tasks = vec![];
 
-        match git_operations::repository_mirroring::mirror_repository(
+    for repo in src_repos.value {
+        let task = clone_repo(
+            repo.name,
             repo.remoteUrl,
-            new_repo.remoteUrl,
-        )
-        .await
-        {
-            Ok(data) => data,
-            Err(err) => return Err(err),
-        }
+            &params.dest_project_ref.pat,
+            &params.dest_project_ref.organization_name,
+            &params.dest_project_ref.project_name,
+            &dest_project.id,
+        );
+        tasks.push(task.boxed());
     }
 
-    remove_default_repo(
+    let remove_task = remove_default_repo(
         &params.dest_project_ref,
         &dest_project.id,
-        &default_repo_id.unwrap(),
-    )
-    .await;
+        default_repo_id.unwrap().clone(),
+    );
+
+    tasks.push(remove_task.boxed());
+
+    future::join_all(tasks).await;
 
     return Ok(());
 }
@@ -178,7 +168,11 @@ async fn create_default_repo(
     return Ok(default_repo.unwrap().id.clone());
 }
 
-async fn remove_default_repo(project_ref: &ProjectRef, project_id: &String, repo_id: &String) {
+async fn remove_default_repo(
+    project_ref: &ProjectRef,
+    project_id: &String,
+    repo_id: String,
+) -> Result<(), String> {
     let _ = repos::delete::delete_repo(repos::delete::Params {
         pat: project_ref.pat.clone(),
         organization_name: project_ref.organization_name.clone(),
@@ -186,4 +180,64 @@ async fn remove_default_repo(project_ref: &ProjectRef, project_id: &String, repo
         repo_id: repo_id.clone(),
     })
     .await;
+
+    return Ok(());
+}
+
+async fn delete_repo(
+    repo_id: String,
+    repo_name: String,
+    pat: &String,
+    organization_name: &String,
+    project_id: &String,
+) -> Result<(), String> {
+    if repo_name == "default" {
+        return Ok(());
+    }
+
+    let res = repos::delete::delete_repo(repos::delete::Params {
+        pat: pat.clone(),
+        organization_name: organization_name.clone(),
+        project_id: project_id.clone(),
+        repo_id: repo_id.clone(),
+    })
+    .await;
+
+    if res.is_err() {
+        return Err(res.err().unwrap());
+    }
+
+    return Ok(());
+}
+
+async fn clone_repo(
+    repo_name: String,
+    repo_remote_url: String,
+    pat: &String,
+    organization_name: &String,
+    project_name: &String,
+    project_id: &String,
+) -> Result<(), String> {
+    let new_repo = match repos::create::create_repo(&repos::create::Params {
+        pat: pat.clone(),
+        organization_name: organization_name.clone(),
+        project_name: project_name.clone(),
+        project_id: project_id.clone(),
+        repo_name: repo_name.clone(),
+    })
+    .await
+    {
+        Ok(data) => data,
+        Err(err) => return Err(err),
+    };
+
+    match git_operations::repository_mirroring::mirror_repository(
+        repo_remote_url.clone(),
+        new_repo.remoteUrl,
+    )
+    .await
+    {
+        Ok(_) => Ok(()),
+        Err(err) => return Err(err),
+    }
 }
