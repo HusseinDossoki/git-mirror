@@ -56,11 +56,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": false,
         "title": "Git Mirror!",
+        "resizable": false,
         "width": 600,
+        "minWidth": 600,
         "height": 800,
-        "maxWidth": 600,
         "minHeight": 800,
         "alwaysOnTop": false
       }
