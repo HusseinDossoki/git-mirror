@@ -12,7 +12,23 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": false,
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": true,
+        "relaunchDangerousAllowSymlinkMacos": false
+      },
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": true
+      },
+      "fs": {
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
