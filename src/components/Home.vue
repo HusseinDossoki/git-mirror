@@ -28,19 +28,19 @@ const options = ref([
 		id: 1,
 		image: new URL('../assets/git.png', import.meta.url).href,
 		title: "Mirror Git Repository",
-		description: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer."
+		description: "Mirroring any single repository in another location Regardless of the type of the version controle (github, gitlab, bitbucket, azure devops, ...etc)"
 	},
 	{
 		id: 2,
 		image: new URL('../assets/azure.png', import.meta.url).href,
 		title: "Sync Azure Devops Organizations",
-		description: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer."
+		description: "Clone/Copy specific AzureDevOps project repositories to another AzureDevOps project"
 	},
 	{
 		id: 3,
 		image: new URL('../assets/github-to-azure.jpg', import.meta.url).href,
 		title: "Github to Azure Devops",
-		description: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer."
+		description: "Clone/Copy specific GitHub project repositories to AzureDevOps project"
 	}
 ]);
 </script>

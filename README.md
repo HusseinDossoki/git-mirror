@@ -4,6 +4,20 @@
 
 # Git Mirror  [![license](https://img.shields.io/github/license/DAVFoundation/captain-n3m0.svg?style=flat)](https://github.com/HusseinDossoki/git-mirror/blob/dev/LICENSE)
 
+
+*Git Mirror* is a tool to keep multiple git repositories in sync. Whenever something is pushed to any repository, You can use this tool to forward the commits to all the others. Or you can use it to copy (Mirroring a repository in another location)
+
+## Screenshots
+<img src="./docs/main_page.png" width="300"><img src="./docs/azure_to_azure.png" width="300"><img src="./docs/clone_repo.png" width="300">
+
+## Features
+##### 1) Copy Single Repository ✅
+Mirroring any single repository in another location Regardless of the type of the version controle (github, gitlab, bitbucket, azure devops, ...etc)
+##### 2) Azure to Azure ✅
+Clone/Copy specific AzureDevOps project repositories to another AzureDevOps project
+##### 3) GitHub to Azure 🚫
+Clone/Copy specific GitHub project repositories to AzureDevOps project
+
 ## Libraries Used
 
 #### Frontend
