@@ -11,11 +11,12 @@
       <AzureToAzure v-if="selectedOption.id == 2" />
       <GithubToAzure v-if="selectedOption.id == 3" />
     </div>
-
   </div>
+  <AppFooter />
 </template>
 
 <script setup>
+import AppFooter from './components/AppFooter.vue';
 import { ref } from "vue";
 import Home from './components/Home.vue';
 import MirrorRepository from './components/MirrorRepository/MirrorRepository.vue';
