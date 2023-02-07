@@ -9,10 +9,26 @@ pub async fn mirror_repository(src_repo_url: String, dest_repo_url: String) -> R
 
     let folder_name = &generate_random_name();
 
-    git_clone_mirror(&src_repo_url, folder_name, &".".to_string()).await;
-    set_push_url(&dest_repo_url, &folder_name).await;
-    git_fetch(&folder_name).await;
-    git_push(&folder_name).await;
+    let res = git_clone_mirror(&src_repo_url, folder_name, &".".to_string()).await;
+    if res.is_err() {
+        fs::remove_dir_all(folder_name).expect("error");
+        return Err(res.unwrap_err());
+    }
+    let res = set_push_url(&dest_repo_url, &folder_name).await;
+    if res.is_err() {
+        fs::remove_dir_all(folder_name).expect("error");
+        return Err(res.unwrap_err());
+    }
+    let res = git_fetch(&folder_name).await;
+    if res.is_err() {
+        fs::remove_dir_all(folder_name).expect("error");
+        return Err(res.unwrap_err());
+    }
+    let res = git_push(&folder_name).await;
+    if res.is_err() {
+        fs::remove_dir_all(folder_name).expect("error");
+        return Err(res.unwrap_err());
+    }
 
     fs::remove_dir_all(folder_name).expect("error");
 
@@ -41,48 +57,79 @@ fn generate_random_name() -> String {
     return rand_string;
 }
 
-async fn git_clone_mirror(src_repo_url: &String, folder_name: &str, working_dir: &String) {
+async fn git_clone_mirror(
+    src_repo_url: &String,
+    folder_name: &str,
+    working_dir: &String,
+) -> Result<(), String> {
     let cmd = &["clone", "--mirror", &src_repo_url, folder_name];
 
-    Command::new("git")
+    let output = Command::new("git")
         .current_dir(working_dir)
         .args(cmd)
         .output()
         .await
         .expect(&format!("Erorr while cloning the repo"));
+
+    if !output.status.success() {
+        print!("{:#?}", String::from_utf8_lossy(&output.stderr).to_string());
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+
+    println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+
+    return Ok(());
 }
 
-async fn set_push_url(dest_repo_url: &String, working_dir: &String) {
+async fn set_push_url(dest_repo_url: &String, working_dir: &String) -> Result<(), String> {
     let cmd = &["remote", "set-url", "--push", "origin", &dest_repo_url];
 
-    Command::new("git")
+    let output = Command::new("git")
         .current_dir(working_dir)
         .args(cmd)
         .output()
         .await
         .expect(&format!("Erorr while setting the push url"));
+
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+
+    return Ok(());
 }
 
-async fn git_fetch(working_dir: &String) {
+async fn git_fetch(working_dir: &String) -> Result<(), String> {
     let cmd = &["fetch", "-p", "origin"];
 
-    Command::new("git")
+    let output = Command::new("git")
         .current_dir(working_dir)
         .args(cmd)
         .output()
         .await
         .expect(&format!("Erorr while fetching"));
+
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+
+    return Ok(());
 }
 
-async fn git_push(working_dir: &String) {
+async fn git_push(working_dir: &String) -> Result<(), String> {
     let cmd = &["push", "--mirror", "--verbose"];
 
-    Command::new("git")
+    let output = Command::new("git")
         .current_dir(working_dir)
         .args(cmd)
         .output()
         .await
         .expect(&format!("Erorr while pushing the repo changes"));
+
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+
+    return Ok(());
 }
 
 //#endregion

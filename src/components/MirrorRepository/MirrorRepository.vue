@@ -21,7 +21,11 @@
   </div>
 
 
-  <div class="alert alert-success mt-3" v-if="submitted">
+  <div class="alert alert-danger mt-3" v-if="submitted && error">
+    {{error}}
+  </div>
+
+  <div class="alert alert-success mt-3" v-if="submitted && !error">
     Repository is cloned successfully ✅
   </div>
 
@@ -41,7 +45,7 @@ import Spinner from "../Spinner.vue";
 import { ref, computed } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 
-const result = ref(null);
+const error = ref(null);
 const submitting = ref(false);
 const submitted = ref(false);
 
@@ -52,16 +56,24 @@ const isValidForm = computed(() => {
   return srcUrl.value && destUrl.value;
 })
 
-async function submit() {
+function submit() {
   submitted.value = false;
   submitting.value = true;
-  result.value = await invoke("mirror_repository",
+  invoke("mirror_repository",
     {
       srcRepoUrl: srcUrl.value,
       destRepoUrl: destUrl.value,
+    })
+    .then(res => {
+      submitting.value = false;
+      submitted.value = true;
+      err.value = null;
+    })
+    .catch(err => {
+      error.value = err;
+      submitting.value = false;
+      submitted.value = true;
     });
-  submitting.value = false;
-  submitted.value = true;
 }
 </script>
 
