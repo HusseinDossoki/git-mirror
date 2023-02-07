@@ -3,18 +3,21 @@ use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use std::fs;
 
-pub async fn mirror_repository(src_repo_url: String, dest_repo_url: String) -> Result<(), String> {
+pub async fn mirror_repository(src_pat: String, src_repo_url: String, dest_pat: String, dest_repo_url: String) -> Result<(), String> {
     let repo_name = src_repo_url.split("/").last().unwrap();
     println!("⌛️ Mirroring a repository '{}'...", repo_name);
 
+    let src = src_repo_url.replace("https://", format!("https://{}@", src_pat.clone()).as_str());
+    let dest = dest_repo_url.replace("https://", format!("https://{}@", dest_pat.clone()).as_str());
+
     let folder_name = &generate_random_name();
 
-    let res = git_clone_mirror(&src_repo_url, folder_name, &".".to_string()).await;
+    let res = git_clone_mirror(&src, folder_name, &".".to_string()).await;
     if res.is_err() {
         fs::remove_dir_all(folder_name).expect("error");
         return Err(res.unwrap_err());
     }
-    let res = set_push_url(&dest_repo_url, &folder_name).await;
+    let res = set_push_url(&dest, &folder_name).await;
     if res.is_err() {
         fs::remove_dir_all(folder_name).expect("error");
         return Err(res.unwrap_err());
@@ -75,8 +78,6 @@ async fn git_clone_mirror(
         print!("{:#?}", String::from_utf8_lossy(&output.stderr).to_string());
         return Err(String::from_utf8_lossy(&output.stderr).to_string());
     }
-
-    println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
 
     return Ok(());
 }

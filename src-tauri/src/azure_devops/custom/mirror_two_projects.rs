@@ -71,9 +71,9 @@ pub async fn mirror_project(params: Params) -> Result<(), String> {
     };
 
     let src_repos = match repos::list::get_repos(repos::list::Params {
-        pat: params.src_project_ref.pat,
-        organization_name: params.src_project_ref.organization_name,
-        project_name: params.src_project_ref.project_name,
+        pat: params.src_project_ref.pat.clone(),
+        organization_name: params.src_project_ref.organization_name.clone(),
+        project_name: params.src_project_ref.project_name.clone(),
     })
     .await
     {
@@ -122,6 +122,7 @@ pub async fn mirror_project(params: Params) -> Result<(), String> {
         let task = clone_repo(
             repo.name,
             repo.remoteUrl,
+            &params.src_project_ref.pat,
             &params.dest_project_ref.pat,
             &params.dest_project_ref.organization_name,
             &params.dest_project_ref.project_name,
@@ -213,13 +214,14 @@ async fn delete_repo(
 async fn clone_repo(
     repo_name: String,
     repo_remote_url: String,
-    pat: &String,
+    src_pat: &String,
+    dest_pat: &String,
     organization_name: &String,
     project_name: &String,
     project_id: &String,
 ) -> Result<(), String> {
     let new_repo = match repos::create::create_repo(&repos::create::Params {
-        pat: pat.clone(),
+        pat: src_pat.clone(),
         organization_name: organization_name.clone(),
         project_name: project_name.clone(),
         project_id: project_id.clone(),
@@ -232,7 +234,9 @@ async fn clone_repo(
     };
 
     match git_operations::repository_mirroring::mirror_repository(
+        src_pat.clone(),
         repo_remote_url.clone(),
+        dest_pat.clone(),
         new_repo.remoteUrl,
     )
     .await

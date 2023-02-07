@@ -4,8 +4,8 @@ use crate::git_operations::repository_mirroring;
 use crate::tauri_apis::models;
 
 #[tauri::command]
-pub async fn mirror_repository(src_repo_url: String, dest_repo_url: String) -> Result<(), String> {
-    let res = repository_mirroring::mirror_repository(src_repo_url, dest_repo_url).await;
+pub async fn mirror_repository(src_pat: String, src_repo_url: String, dest_pat: String, dest_repo_url: String) -> Result<(), String> {
+    let res = repository_mirroring::mirror_repository(src_pat, src_repo_url, dest_pat, dest_repo_url).await;
     match res {
         Ok(_) => {
             return Ok(());
