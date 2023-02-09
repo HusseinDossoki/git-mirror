@@ -74,8 +74,8 @@
         "fullscreen": false,
         "title": "Git Mirror!",
         "resizable": false,
-        "width": 600,
-        "minWidth": 600,
+        "width": 700,
+        "minWidth": 700,
         "height": 800,
         "minHeight": 800,
         "alwaysOnTop": false

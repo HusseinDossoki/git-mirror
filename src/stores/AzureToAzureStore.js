@@ -3,10 +3,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 export const useAzureToAzureStore = defineStore("azureToAzureStore", {
 	state: () => ({
-		srcPat: null,
-		srcOrgName: null,
-		destPat: null,
-		destOrgName: null,
+		srcPat: "tpg33yd5wbpdjkjx2eowitomylper2q2dmc7lxyxwdfh74opulaa",
+		srcOrgName: "FortTeck",
+		destPat: "bqptnbghohjhkfn35av6qvt2wlapm3cteeghy3qaxsahsbatmoha",
+		destOrgName: "FortTeck-Company",
 		loading: false,
 		createProjectIfNotExist: true,
 		filter: null,

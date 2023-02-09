@@ -1,22 +1,23 @@
 <template>
-	<section class="logo">
-		<h1 class="mt-3 pb-0 mb-0">Git Mirror!</h1>
-		<small>By <strong>Hussein Dossoki</strong></small>
-	</section>
 
-	<div class="card my-3" v-for="opt in options" @click="$emit('onOptionChanges', opt)">
-		<div class="row no-gutters">
-			<div class="col-4 m-auto">
-				<img :src="opt.image" class="card-img" alt="image">
-			</div>
-			<div class="col-8">
-				<div class="card-body">
-					<h5 class="card-title">{{ opt.title }}</h5>
-					<p class="card-text">{{ opt.description }}</p>
-				</div>
-			</div>
-		</div>
+	<div class="text-center my-8">
+		<h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"><span
+				class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Git Mirror!</span></h1>
+		<p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Git Mirror is a tool to keep multiple git
+			repositories in sync. Whenever something is pushed to any repository, You can use this tool to forward the commits
+			to all the others. Or you can use it to copy (Mirroring a repository in another location)</p>
 	</div>
+
+
+	<a href="javascript:void(0)"
+		class="mt-2 flex items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+		v-for="opt in options" @click="$emit('onOptionChanges', opt)">
+		<img class="object-cover rounded-t-lg md:rounded-none md:rounded-l-lg card-img p-2" :src="opt.image" alt="">
+		<div class="flex flex-col justify-between p-4 leading-normal">
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ opt.title }}</h5>
+			<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ opt.description }}</p>
+		</div>
+	</a>
 
 </template>
 
@@ -28,7 +29,7 @@ const options = ref([
 		id: 1,
 		image: new URL('../assets/git.png', import.meta.url).href,
 		title: "Mirror Git Repository",
-		description: "Mirroring any single repository in another location Regardless of the type of the version controle (github, gitlab, bitbucket, azure devops, ...etc)"
+		description: "Mirroring any single repository in another location Regardless of the type of the version controle (github, gitlab, azure devops, ...etc)"
 	},
 	{
 		id: 2,
@@ -38,7 +39,7 @@ const options = ref([
 	},
 	{
 		id: 3,
-		image: new URL('../assets/github-to-azure.jpg', import.meta.url).href,
+		image: new URL('../assets/github-to-azure.png', import.meta.url).href,
 		title: "Github to Azure Devops",
 		description: "Clone/Copy specific GitHub project repositories to AzureDevOps project"
 	}
@@ -46,29 +47,9 @@ const options = ref([
 </script>
 
 <style scoped>
-.logo {
-	text-align: center;
-	margin-bottom: 40px;
-}
-
-.logo h1 {
-	letter-spacing: 5px;
-	font-family: Arial;
-	font-weight: bold;
-}
-
-.logo small strong {
-	color: burlywood;
-}
-
-.card:hover {
-	cursor: pointer;
-	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-}
-
-.card img {
-	height: 100px;
-	object-fit: contain;
-	padding-left: 15px;
+img.card-img {
+	width: 140px !important;
+	height: 120px !important;
+	object-fit: contain !important;
 }
 </style>
