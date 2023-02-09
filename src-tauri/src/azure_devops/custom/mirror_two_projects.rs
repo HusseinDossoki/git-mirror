@@ -113,7 +113,12 @@ pub async fn mirror_project(params: Params) -> Result<(), String> {
         tasks.push(task.boxed());
     }
 
-    future::join_all(tasks).await;
+    let tasks_res = future::join_all(tasks).await;
+    for item in tasks_res {
+        if item.is_err() {
+            return Err(item.unwrap_err());
+        }
+    }
 
     // Create the new repos
     let mut tasks = vec![];
@@ -139,7 +144,12 @@ pub async fn mirror_project(params: Params) -> Result<(), String> {
 
     tasks.push(remove_task.boxed());
 
-    future::join_all(tasks).await;
+    let tasks_res = future::join_all(tasks).await;
+    for item in tasks_res {
+        if item.is_err() {
+            return Err(item.unwrap_err());
+        }
+    }
 
     return Ok(());
 }

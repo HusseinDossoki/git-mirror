@@ -31,11 +31,12 @@
 						</svg>
 					</div>
 					<div v-if="project.status == 'completed'">✅</div>
-					<div v-if="project.status == 'failed'" :title="project.error">🚫</div>
+					<div v-if="project.status == 'failed'">🚫</div>
 					<small class="dark:text-white" style="line-height: 30px;">{{ formatTime(project.timerCount) }}</small>
 				</div>
 			</div>
 			<p class="font-normal text-gray-700 dark:text-gray-400">{{ project.description }}</p>
+			<small style="color: red;" v-if="project.error">{{project.error}}</small>
 		</a>
 
 	</div>
