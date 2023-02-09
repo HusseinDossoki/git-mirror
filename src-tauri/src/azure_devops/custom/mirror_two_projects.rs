@@ -231,7 +231,7 @@ async fn clone_repo(
     project_id: &String,
 ) -> Result<(), String> {
     let new_repo = match repos::create::create_repo(&repos::create::Params {
-        pat: src_pat.clone(),
+        pat: dest_pat.clone(),
         organization_name: organization_name.clone(),
         project_name: project_name.clone(),
         project_id: project_id.clone(),
