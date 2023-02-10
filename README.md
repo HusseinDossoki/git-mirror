@@ -19,11 +19,11 @@
 
 ## Features
 ##### 1) Copy Single Repository ✅
-Mirroring any single repository in another location Regardless of the type of the version controle (github, gitlab, bitbucket, azure devops, ...etc)
+Mirroring any single repository in another location Regardless of the type of version control (github, gitlab, bitbucket, azure devops, ...etc)
 ##### 2) Azure to Azure ✅
-Clone/Copy specific AzureDevOps project repositories to another AzureDevOps project
+Sync two different Azure DevOps organizations (Projects, Repositories, Branches, and Commits)
 ##### 3) GitHub to Azure 🚫
-Clone/Copy specific GitHub project repositories to AzureDevOps project
+Sync Github project with Azure DevOps project (Repositories, Branches, and Commits)
 
 ## Libraries Used
 
