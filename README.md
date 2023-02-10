@@ -7,6 +7,13 @@
 
 *Git Mirror* is a tool to keep multiple git repositories in sync. Whenever something is pushed to any repository, You can use this tool to forward the commits to all the others. Or you can use it to copy (Mirroring a repository in another location)
 
+<div align="center">
+
+![App Demo](./docs/demo.gif)
+<br/>*App Demo*
+
+</div>
+
 ## Screenshots
 <img src="./docs/main_page.png" width="300"><img src="./docs/azure_to_azure.png" width="300"><img src="./docs/clone_repo.png" width="300">
 
@@ -23,7 +30,7 @@ Clone/Copy specific GitHub project repositories to AzureDevOps project
 #### Frontend
 
 * [Vue3](https://vuejs.org/) - See [`source code`](./src)
-* [bootstrap](https://getbootstrap.com/) - frontend toolkit
+* [Tailwind CSS](https://flowbite.com/docs/getting-started/introduction/) - frontend toolkit
 
 #### Backend
 
