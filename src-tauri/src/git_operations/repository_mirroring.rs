@@ -12,39 +12,20 @@ pub async fn mirror_repository(
     let repo_name = src_repo_url.split("/").last().unwrap();
     println!("⌛️ Mirroring a repository '{}'...", repo_name);
 
-    let mut src = String::new();
-    let mut dest = String::new();
-    if src_repo_url.contains("@") {
-        src = src_repo_url.replace("@", format!(":{}@", src_pat.clone()).as_str());
-    } else {
-        src = src_repo_url.replace("https://", format!("https://{}@", src_pat.clone()).as_str());
-    }
-    if dest_repo_url.contains("@") {
-        dest = dest_repo_url.replace("@", format!(":{}@", dest_pat.clone()).as_str());
-    } else {
-        dest = dest_repo_url.replace(
-            "https://",
-            format!("https://{}@", dest_pat.clone()).as_str(),
-        );
-    }
+    let src = format_url(&src_repo_url, &src_pat);
+    let dest = format_url(&dest_repo_url, &dest_pat);
 
     let folder_name = &generate_random_name();
 
+    let res = git_config().await;
+    if res.is_err() {
+        return Err(res.unwrap_err());
+    }
     let res = git_clone_mirror(&src, folder_name, &".".to_string()).await;
     if res.is_err() {
         return Err(res.unwrap_err());
     }
-    let res = set_push_url(&dest, &folder_name).await;
-    if res.is_err() {
-        fs::remove_dir_all(folder_name).expect("error");
-        return Err(res.unwrap_err());
-    }
-    let res = git_fetch(&folder_name).await;
-    if res.is_err() {
-        fs::remove_dir_all(folder_name).expect("error");
-        return Err(res.unwrap_err());
-    }
-    let res = git_push(&folder_name).await;
+    let res = git_push(&folder_name, &dest).await;
     if res.is_err() {
         fs::remove_dir_all(folder_name).expect("error");
         return Err(res.unwrap_err());
@@ -62,6 +43,14 @@ pub async fn mirror_repository(
 
 //#region Private functions
 
+fn format_url(http_url: &String, pat: &String) -> String {
+    if http_url.contains("@") {
+        return http_url.replace("@", format!(":{}@", pat.clone()).as_str());
+    } else {
+        return http_url.replace("https://", format!("https://{}@", pat.clone()).as_str());
+    }
+}
+
 fn generate_random_name() -> String {
     // We use (.) to hide the temp folder
     let prefix = ".temp_";
@@ -77,12 +66,34 @@ fn generate_random_name() -> String {
     return rand_string;
 }
 
+async fn git_config() -> Result<(), String> {
+    // git config --global http.postBuffer 524288000
+    // 500 MB: 524288000 (as posted in the original answer)
+    // 1 GB: 1048576000
+    // 2 GB: 2097152000 (anything higher is rejected as 'out of range')
+
+    let cmd = &["config", "--global", "http.postBuffer", "1048576000"];
+
+    let output = Command::new("git")
+        .args(cmd)
+        .output()
+        .await
+        .expect(&format!("Erorr while cloning the repo"));
+
+    if !output.status.success() {
+        print!("{:#?}", String::from_utf8_lossy(&output.stderr).to_string());
+        return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+
+    return Ok(());
+}
+
 async fn git_clone_mirror(
     src_repo_url: &String,
     folder_name: &str,
     working_dir: &String,
 ) -> Result<(), String> {
-    let cmd = &["clone", "--mirror", &src_repo_url, folder_name];
+    let cmd = &["clone", "--bare", &src_repo_url, folder_name];
 
     let output = Command::new("git")
         .current_dir(working_dir)
@@ -99,42 +110,8 @@ async fn git_clone_mirror(
     return Ok(());
 }
 
-async fn set_push_url(dest_repo_url: &String, working_dir: &String) -> Result<(), String> {
-    let cmd = &["remote", "set-url", "--push", "origin", &dest_repo_url];
-
-    let output = Command::new("git")
-        .current_dir(working_dir)
-        .args(cmd)
-        .output()
-        .await
-        .expect(&format!("Erorr while setting the push url"));
-
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
-
-    return Ok(());
-}
-
-async fn git_fetch(working_dir: &String) -> Result<(), String> {
-    let cmd = &["fetch", "-p", "origin"];
-
-    let output = Command::new("git")
-        .current_dir(working_dir)
-        .args(cmd)
-        .output()
-        .await
-        .expect(&format!("Erorr while fetching"));
-
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).to_string());
-    }
-
-    return Ok(());
-}
-
-async fn git_push(working_dir: &String) -> Result<(), String> {
-    let cmd = &["push", "--mirror", "--verbose"];
+async fn git_push(working_dir: &String, dest: &String) -> Result<(), String> {
+    let cmd = &["push", "--mirror", dest];
 
     let output = Command::new("git")
         .current_dir(working_dir)
