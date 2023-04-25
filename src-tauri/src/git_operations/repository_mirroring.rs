@@ -15,6 +15,9 @@ pub async fn mirror_repository(
     let src = format_url(&src_repo_url, &src_pat);
     let dest = format_url(&dest_repo_url, &dest_pat);
 
+    println!("src => {}", src);
+    println!("dest => {}", dest);
+
     let folder_name = &generate_random_name();
 
     let res = git_config().await;
@@ -72,7 +75,9 @@ async fn git_config() -> Result<(), String> {
     // 1 GB: 1048576000
     // 2 GB: 2097152000 (anything higher is rejected as 'out of range')
 
-    let cmd = &["config", "--global", "http.postBuffer", "1048576000"];
+    // As soon as I did `git config --global --unset http.postBuffer` and `git config --local --unset http.postBuffer `, the push went without any problems.
+
+    let cmd = &["config", "--global", "http.postBuffer", "2097152000"];
 
     let output = Command::new("git")
         .args(cmd)
