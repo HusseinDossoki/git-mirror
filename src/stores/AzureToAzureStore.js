@@ -88,7 +88,11 @@ export const useAzureToAzureStore = defineStore("azureToAzureStore", {
 		},
 		async submit() {
 
-			this.selectedProjects.map(x => x.name).forEach(productName => {
+			let projectsNames = this.selectedProjects.map(x => x.name);
+
+			for (let i = 0; i < projectsNames.length; i++) {
+				const productName = projectsNames[i];
+
 				let product = this.srcProjects.find(x => x.name == productName);
 				product.timerCount = 0;
 				product.timer = setInterval(() => {
@@ -96,7 +100,8 @@ export const useAzureToAzureStore = defineStore("azureToAzureStore", {
 				}, 1000);
 				product.status = "inprogress";
 
-				invoke("sync_azure_devops_project",
+				try {
+					await invoke("sync_azure_devops_project",
 					{
 						params: {
 							src_project_ref: {
@@ -111,19 +116,17 @@ export const useAzureToAzureStore = defineStore("azureToAzureStore", {
 							},
 							create_project_if_not_exist: this.createProjectIfNotExist
 						}
-					})
-					.then((res) => {
-						clearInterval(product.timer);
-						product.status = "completed";
-					})
-					.catch((err) => {
-						clearInterval(product.timer);
-						product.status = "failed";
-						product.error = err;
 					});
 
-			});
+					clearInterval(product.timer);
+					product.status = "completed";
+				} catch(err) {
+					clearInterval(product.timer);
+					product.status = "failed";
+					product.error = err;
+				}
 
+			}
 
 		},
 		checkAll() {
